@@ -1,0 +1,30 @@
+{
+  "name": "pioneer_base",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Pioneer_Base — a local-first lab notebook for tracking scientific projects, experiments, and inventions.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/montserrat": "^5.1.0",
+    "@fontsource/orbitron": "^5.1.0",
+    "@fontsource/exo-2": "^5.1.0",
+    "idb": "^8.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.1",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.7",
+    "vite-plugin-pwa": "^0.21.1"
+  }
+}

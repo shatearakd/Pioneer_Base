@@ -14,9 +14,11 @@ import "@fontsource/exo-2/600.css";
 import "./index.css";
 import App from "./App.jsx";
 
+// import.meta.env.BASE_URL is "/" locally and "/Pioneer_Base/" on GitHub Pages,
+// so routing works correctly whether the app is served from the root or a subpath.
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <App />
     </BrowserRouter>
   </React.StrictMode>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMedia } from "../db.js";
 import { humanSize, saveToDevice } from "../lib/media.js";
+import Icon from "./Icon.jsx";
 
 // Renders a stored media record (audio or video) with a save-to-device option.
 export default function MediaPlayer({ mediaId }) {
@@ -28,21 +29,22 @@ export default function MediaPlayer({ mediaId }) {
   const isVideo = (media.mimeType || "").startsWith("video");
 
   return (
-    <div className="mt-2">
+    <div className="mt-3 panel-2 p-3">
       {isVideo ? (
-        <video src={url} controls className="w-full max-h-72 rounded-xl bg-black" />
+        <video src={url} controls className="w-full max-h-72 rounded-lg bg-black" />
       ) : (
         <audio src={url} controls className="w-full" />
       )}
-      <div className="flex items-center justify-between mt-1 text-xs text-ink/40">
-        <span>
+      <div className="flex items-center justify-between mt-2 font-label-sm text-label-sm text-text-muted">
+        <span className="truncate flex items-center gap-1">
+          <Icon name={isVideo ? "movie" : "graphic_eq"} className="text-[14px] text-secondary" />
           {media.filename} {media.size ? `· ${humanSize(media.size)}` : ""}
         </span>
         <button
-          className="hover:text-teal"
+          className="flex items-center gap-1 text-primary hover:underline flex-shrink-0"
           onClick={() => saveToDevice(media.blob, media.filename)}
         >
-          Save to device
+          <Icon name="file_download" className="text-[15px]" /> Save
         </button>
       </div>
     </div>

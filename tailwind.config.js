@@ -1,43 +1,112 @@
 /** @type {import('tailwindcss').Config} */
+// "Kinetic Lab Matrix" design system — tokens mirrored from the Stitch design
+// spec (DESIGN.md) so screen markup maps 1:1 to these utility names.
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
-        // Palette from the App Brief color scheme PDF
-        brown: {
-          DEFAULT: "#c99b38", // Medium Brown
-          light: "#eddca5", // Light Brown
-        },
-        teal: {
-          DEFAULT: "#00b0be", // Medium Teal
-          light: "#8fd7d7", // Light Teal
-        },
-        azure: "#3594cc", // Medium Blue
-        tangerine: "#ea801c", // Medium Orange
-        // Dark surface tones used across the UI
-        base: {
-          950: "#0a1418",
-          900: "#0f1d23",
-          800: "#15282f",
-          700: "#1d3741",
-        },
-        ink: "#f2f6f6",
-      },
-      fontFamily: {
-        // Montserrat for body text per the brief. Orbitron / Exo 2 stand in
-        // for the brand display fonts (Biometric / Augmented / Nanoparticle)
-        // until the licensed font files are supplied.
-        title: ["Orbitron", "system-ui", "sans-serif"],
-        header: ["Exo 2", "system-ui", "sans-serif"],
-        body: ["Montserrat", "system-ui", "sans-serif"],
+        surface: "#0e1418",
+        "surface-dim": "#0e1418",
+        "surface-bright": "#343a3f",
+        "surface-container-lowest": "#090f13",
+        "surface-container-low": "#161c21",
+        "surface-container": "#1a2025",
+        "surface-container-high": "#252b2f",
+        "surface-container-highest": "#2f363a",
+        "surface-variant": "#2f363a",
+        "surface-base": "#0B1115",
+        "surface-panel": "#111D24",
+        "surface-overlay": "#182832",
+        "surface-border": "#1E3340",
+        "grid-line": "#162731",
+        "on-surface": "#dde3e9",
+        "on-surface-variant": "#bbc9cb",
+        outline: "#869395",
+        "outline-variant": "#3c494b",
+        primary: "#52d8e7",
+        "on-primary": "#00363b",
+        "primary-container": "#00b0be",
+        "on-primary-container": "#003d42",
+        "primary-fixed": "#89f2ff",
+        "primary-fixed-dim": "#52d8e7",
+        secondary: "#85f3ff",
+        "on-secondary": "#00363b",
+        "secondary-container": "#00dbeb",
+        "secondary-fixed": "#85f3ff",
+        "secondary-fixed-dim": "#00dbeb",
+        tertiary: "#ffb955",
+        "on-tertiary": "#452b00",
+        "tertiary-container": "#da9000",
+        "tertiary-fixed": "#ffddb4",
+        "tertiary-fixed-dim": "#ffb955",
+        error: "#ffb4ab",
+        "on-error": "#690005",
+        "error-container": "#93000a",
+        "on-error-container": "#ffdad6",
+        background: "#0e1418",
+        "on-background": "#dde3e9",
+        "text-primary": "#F0F6F8",
+        "text-muted": "#7A929E",
+        "status-amber": "#F5A623",
+        "status-critical": "#FF4A5A",
+        "status-nominal": "#00E59B",
       },
       borderRadius: {
-        "2xl": "1.25rem",
-        "3xl": "1.75rem",
+        none: "0",
+        sm: "0.125rem",
+        DEFAULT: "0.125rem",
+        lg: "0.25rem",
+        xl: "0.5rem",
+        "2xl": "0.75rem",
+        full: "9999px",
       },
-      boxShadow: {
-        card: "0 12px 40px rgba(0, 0, 0, 0.35)",
+      spacing: {
+        "space-xs": "0.25rem",
+        "space-sm": "0.5rem",
+        "space-md": "1rem",
+        "space-lg": "1.5rem",
+        "space-xl": "2.25rem",
+        gutter: "1rem",
+        "gutter-mobile": "0.75rem",
+        margin: "1.5rem",
+        "margin-mobile": "1rem",
+      },
+      fontFamily: {
+        "headline-xl": ["Space Grotesk", "system-ui", "sans-serif"],
+        "headline-xl-mobile": ["Space Grotesk", "system-ui", "sans-serif"],
+        "headline-lg": ["Space Grotesk", "system-ui", "sans-serif"],
+        "headline-lg-mobile": ["Space Grotesk", "system-ui", "sans-serif"],
+        "headline-md": ["Space Grotesk", "system-ui", "sans-serif"],
+        "headline-sm": ["Space Grotesk", "system-ui", "sans-serif"],
+        "body-lg": ["Montserrat", "system-ui", "sans-serif"],
+        "body-md": ["Montserrat", "system-ui", "sans-serif"],
+        "body-sm": ["Montserrat", "system-ui", "sans-serif"],
+        "label-lg": ["JetBrains Mono", "ui-monospace", "monospace"],
+        "label-md": ["JetBrains Mono", "ui-monospace", "monospace"],
+        "label-sm": ["JetBrains Mono", "ui-monospace", "monospace"],
+        "telemetry-val": ["JetBrains Mono", "ui-monospace", "monospace"],
+        display: ["Space Grotesk", "system-ui", "sans-serif"],
+        body: ["Montserrat", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+      },
+      fontSize: {
+        "headline-xl": ["2.25rem", { lineHeight: "2.75rem", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "headline-xl-mobile": ["1.75rem", { lineHeight: "2.25rem", letterSpacing: "-0.01em", fontWeight: "700" }],
+        "headline-lg": ["1.75rem", { lineHeight: "2.25rem", letterSpacing: "-0.01em", fontWeight: "600" }],
+        "headline-lg-mobile": ["1.375rem", { lineHeight: "1.75rem", letterSpacing: "0em", fontWeight: "600" }],
+        "headline-md": ["1.25rem", { lineHeight: "1.625rem", letterSpacing: "0em", fontWeight: "600" }],
+        "headline-sm": ["1rem", { lineHeight: "1.375rem", letterSpacing: "0.01em", fontWeight: "600" }],
+        "body-lg": ["1rem", { lineHeight: "1.625rem", fontWeight: "400" }],
+        "body-md": ["0.875rem", { lineHeight: "1.375rem", fontWeight: "400" }],
+        "body-sm": ["0.75rem", { lineHeight: "1.125rem", fontWeight: "400" }],
+        "label-lg": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "0.02em", fontWeight: "500" }],
+        "label-md": ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.03em", fontWeight: "500" }],
+        "label-sm": ["0.6875rem", { lineHeight: "0.875rem", letterSpacing: "0.05em", fontWeight: "400" }],
+        "telemetry-val": ["1.125rem", { lineHeight: "1.25rem", letterSpacing: "-0.01em", fontWeight: "700" }],
+      },
+      screens: {
+        xs: "420px",
       },
     },
   },

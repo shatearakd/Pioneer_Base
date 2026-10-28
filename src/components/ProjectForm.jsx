@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { listGenres, saveProject, saveGenre, setPrimaryProject } from "../db.js";
 import VoiceButton from "./VoiceButton.jsx";
+import Icon from "./Icon.jsx";
+import { kindMeta, accent } from "../lib/ui.js";
 
 const KINDS = ["experiment", "project", "invention"];
 
@@ -52,9 +54,9 @@ export default function ProjectForm({ project, defaultGenreId, onSaved, onCancel
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="text-xs text-ink/50 font-header">Title</label>
+        <label className="label">Title</label>
         <input
-          className="field mt-1"
+          className="field mt-1.5"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g. Saltwater battery cell"
@@ -63,37 +65,48 @@ export default function ProjectForm({ project, defaultGenreId, onSaved, onCancel
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-xs text-ink/50 font-header">Type</label>
-          <select className="field mt-1" value={kind} onChange={(e) => setKind(e.target.value)}>
-            {KINDS.map((k) => (
-              <option key={k} value={k} className="bg-base-800">
-                {k}
-              </option>
-            ))}
-          </select>
+      <div>
+        <label className="label">Type</label>
+        <div className="flex flex-wrap gap-2 mt-1.5">
+          {KINDS.map((k) => {
+            const m = kindMeta(k);
+            const a = accent(m.accent);
+            const on = kind === k;
+            return (
+              <button
+                key={k}
+                type="button"
+                onClick={() => setKind(k)}
+                className={`btn border ${
+                  on ? `${a.border} ${a.soft}` : "border-surface-border text-text-muted hover:text-on-surface"
+                }`}
+              >
+                <Icon name={m.icon} className="text-[16px]" /> {m.label}
+              </button>
+            );
+          })}
         </div>
-        <div>
-          <label className="text-xs text-ink/50 font-header">Genre folder</label>
-          <select
-            className="field mt-1"
-            value={genreId}
-            onChange={(e) => setGenreId(e.target.value)}
-          >
-            <option value="" className="bg-base-800">
-              Unfiled
+      </div>
+
+      <div>
+        <label className="label">Genre folder</label>
+        <select
+          className="field mt-1.5"
+          value={genreId}
+          onChange={(e) => setGenreId(e.target.value)}
+        >
+          <option value="" className="bg-surface-container">
+            Unfiled
+          </option>
+          {genres.map((g) => (
+            <option key={g.id} value={g.id} className="bg-surface-container">
+              {g.name}
             </option>
-            {genres.map((g) => (
-              <option key={g.id} value={g.id} className="bg-base-800">
-                {g.name}
-              </option>
-            ))}
-            <option value="__new__" className="bg-base-800">
-              + New genre…
-            </option>
-          </select>
-        </div>
+          ))}
+          <option value="__new__" className="bg-surface-container">
+            + New genre…
+          </option>
+        </select>
       </div>
 
       {genreId === "__new__" && (
@@ -107,14 +120,14 @@ export default function ProjectForm({ project, defaultGenreId, onSaved, onCancel
 
       <div>
         <div className="flex items-center justify-between">
-          <label className="text-xs text-ink/50 font-header">Overview</label>
+          <label className="label">Overview</label>
           <VoiceButton
-            className="!px-2 !py-1 text-xs"
+            className="!px-2 !py-1"
             onFinal={(t) => t && setOverview((prev) => (prev ? `${prev} ${t}` : t))}
           />
         </div>
         <textarea
-          className="field mt-1 min-h-[90px]"
+          className="field mt-1.5 min-h-[90px]"
           value={overview}
           onChange={(e) => setOverview(e.target.value)}
           placeholder="What is this project about?"
@@ -122,21 +135,21 @@ export default function ProjectForm({ project, defaultGenreId, onSaved, onCancel
       </div>
 
       <div>
-        <label className="text-xs text-ink/50 font-header">Tags (comma separated)</label>
+        <label className="label">Tags (comma separated)</label>
         <input
-          className="field mt-1"
+          className="field mt-1.5"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           placeholder="energy, electrochemistry"
         />
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-ink/80">
+      <label className="flex items-center gap-2.5 font-body-md text-body-md text-on-surface">
         <input
           type="checkbox"
           checked={isPrimary}
           onChange={(e) => setIsPrimary(e.target.checked)}
-          className="accent-teal h-4 w-4"
+          className="accent-primary h-4 w-4"
         />
         Set as my primary experiment
       </label>

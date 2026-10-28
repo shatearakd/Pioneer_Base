@@ -15,12 +15,12 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
       manifest: {
-        name: "Pioneer_Base",
+        name: "Pioneer Base",
         short_name: "Pioneer",
         description:
           "A local-first lab notebook for your projects, experiments, and inventions.",
-        theme_color: "#00b0be",
-        background_color: "#0a1418",
+        theme_color: "#0b1115",
+        background_color: "#0b1115",
         display: "standalone",
         start_url: ".",
         scope: ".",

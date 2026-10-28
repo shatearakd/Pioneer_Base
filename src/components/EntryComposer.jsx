@@ -3,14 +3,10 @@ import { saveEntry } from "../db.js";
 import { storeBlob } from "../lib/media.js";
 import { recordAudio, mediaRecorderSupported } from "../lib/voice.js";
 import VoiceButton from "./VoiceButton.jsx";
+import Icon from "./Icon.jsx";
+import { entryMeta, accent } from "../lib/ui.js";
 
-const KINDS = [
-  { id: "note", label: "Note" },
-  { id: "doc", label: "Document" },
-  { id: "result", label: "Result" },
-  { id: "hypothesis", label: "Hypothesis" },
-  { id: "labReport", label: "Lab report" },
-];
+const KINDS = ["note", "doc", "result", "hypothesis", "labReport"];
 
 // Composer for adding log entries to a project: typed/dictated text, recorded
 // audio, or an attached audio/video file. onSaved() refreshes the parent.
@@ -95,19 +91,30 @@ export default function EntryComposer({ projectId, onSaved }) {
   }
 
   return (
-    <div className="glass rounded-2xl p-4 space-y-3">
-      <div className="flex flex-wrap gap-2">
-        {KINDS.map((k) => (
-          <button
-            key={k.id}
-            onClick={() => setKind(k.id)}
-            className={`chip border ${
-              kind === k.id ? "border-teal/50 text-teal bg-teal/10" : "border-white/10"
-            }`}
-          >
-            {k.label}
-          </button>
-        ))}
+    <div className="panel p-space-md space-y-3">
+      <div className="flex items-center gap-1.5 text-primary">
+        <Icon name="add_notes" className="text-[16px]" />
+        <span className="label text-primary">Log a new entry</span>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {KINDS.map((k) => {
+          const m = entryMeta(k);
+          const a = accent(m.accent);
+          const on = kind === k;
+          return (
+            <button
+              key={k}
+              onClick={() => setKind(k)}
+              className={`chip border transition-colors ${
+                on ? `${a.border} ${a.soft}` : "border-surface-border text-text-muted hover:text-on-surface"
+              }`}
+            >
+              <Icon name={m.icon} className="text-[14px]" />
+              {m.label}
+            </button>
+          );
+        })}
       </div>
 
       <input
@@ -117,18 +124,16 @@ export default function EntryComposer({ projectId, onSaved }) {
         onChange={(e) => setTitle(e.target.value)}
       />
 
-      <div className="flex items-start gap-2">
-        <textarea
-          className="field min-h-[80px] flex-1"
-          placeholder="Write your log, or dictate it with the mic…"
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-        />
-      </div>
+      <textarea
+        className="field min-h-[80px]"
+        placeholder="Write your log, or dictate it with the mic…"
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+      />
 
       <div className="flex flex-wrap items-center gap-2">
         <button className="btn-primary" onClick={addText} disabled={busy}>
-          Save entry
+          <Icon name="add_circle" className="text-[16px]" /> Save entry
         </button>
 
         <VoiceButton
@@ -139,14 +144,17 @@ export default function EntryComposer({ projectId, onSaved }) {
         {mediaRecorderSupported() && (
           <button
             onClick={toggleRecording}
-            className={`btn ${recording ? "bg-tangerine text-base-950 pulse-rec" : "btn-ghost"}`}
+            className={`btn ${
+              recording ? "bg-status-critical text-surface-base pulse-rec" : "btn-ghost text-primary"
+            }`}
           >
+            <Icon name={recording ? "stop_circle" : "radio_button_checked"} className="text-[16px]" />
             {recording ? "Stop & save audio" : "Record audio"}
           </button>
         )}
 
         <button className="btn-ghost" onClick={() => fileRef.current?.click()}>
-          Attach audio / video
+          <Icon name="attach_file" className="text-[16px]" /> Attach media
         </button>
         <input
           ref={fileRef}

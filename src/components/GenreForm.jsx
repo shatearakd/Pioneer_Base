@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { saveGenre, deleteGenre } from "../db.js";
+import Icon from "./Icon.jsx";
 
-const SWATCHES = ["#00b0be", "#3594cc", "#ea801c", "#c99b38", "#8fd7d7", "#eddca5"];
+// Kinetic Lab Matrix accent palette for genre branch nodes.
+const SWATCHES = ["#52d8e7", "#85f3ff", "#ffb955", "#00E59B", "#F5A623", "#7A929E"];
 
-// Create or edit a genre folder (category node in the tree).
+// Create or edit a genre folder (branch node in the taxonomy tree).
 export default function GenreForm({ genre, onSaved, onCancel }) {
   const [name, setName] = useState(genre?.name || "");
   const [color, setColor] = useState(genre?.color || SWATCHES[0]);
@@ -38,9 +40,9 @@ export default function GenreForm({ genre, onSaved, onCancel }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="text-xs text-ink/50 font-header">Name</label>
+        <label className="label">Name</label>
         <input
-          className="field mt-1"
+          className="field mt-1.5"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Chemistry"
@@ -49,25 +51,25 @@ export default function GenreForm({ genre, onSaved, onCancel }) {
         />
       </div>
       <div>
-        <label className="text-xs text-ink/50 font-header">Color</label>
-        <div className="flex gap-2 mt-2">
+        <label className="label">Branch accent</label>
+        <div className="flex gap-2.5 mt-2">
           {SWATCHES.map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => setColor(c)}
-              className={`h-8 w-8 rounded-full border-2 ${
-                color === c ? "border-ink" : "border-transparent"
+              className={`h-8 w-8 rounded-full border-2 transition-transform ${
+                color === c ? "border-text-primary scale-110" : "border-transparent"
               }`}
-              style={{ background: c }}
+              style={{ background: c, boxShadow: `0 0 10px ${c}66` }}
             />
           ))}
         </div>
       </div>
       <div>
-        <label className="text-xs text-ink/50 font-header">Tags (comma separated)</label>
+        <label className="label">Tags (comma separated)</label>
         <input
-          className="field mt-1"
+          className="field mt-1.5"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           placeholder="reactions, materials"
@@ -76,8 +78,8 @@ export default function GenreForm({ genre, onSaved, onCancel }) {
       <div className="flex justify-between gap-2 pt-2">
         <div>
           {genre && (
-            <button type="button" className="btn-ghost text-tangerine border-tangerine/30" onClick={handleDelete}>
-              Delete
+            <button type="button" className="btn-danger" onClick={handleDelete}>
+              <Icon name="delete" className="text-[16px]" /> Delete
             </button>
           )}
         </div>

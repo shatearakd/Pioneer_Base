@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { startDictation, speechRecognitionSupported } from "../lib/voice.js";
+import Icon from "./Icon.jsx";
 
 // Mic button that dictates speech into text. Calls onTranscript(text) with the
 // live transcript, and onFinal(text) when dictation ends.
@@ -35,13 +36,13 @@ export default function VoiceButton({ onTranscript, onFinal, className = "" }) {
       type="button"
       onClick={toggle}
       title={listening ? "Stop dictation" : "Dictate with your voice"}
-      className={`btn ${listening ? "bg-tangerine text-base-950 pulse-rec" : "btn-ghost"} ${className}`}
+      className={`btn ${
+        listening
+          ? "bg-status-critical text-surface-base pulse-rec"
+          : "btn-ghost text-secondary"
+      } ${className}`}
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="9" y="3" width="6" height="11" rx="3" />
-        <path d="M5 11a7 7 0 0 0 14 0" />
-        <path d="M12 18v3" />
-      </svg>
+      <Icon name={listening ? "graphic_eq" : "mic"} className="text-[18px]" />
       {listening ? "Listening…" : "Voice"}
     </button>
   );

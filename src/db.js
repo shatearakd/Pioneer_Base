@@ -209,6 +209,12 @@ export async function saveEntry(entry) {
   await db.put("entries", record);
   return record;
 }
+export async function recentEntries(limit = 6) {
+  const all = await (await getDB()).getAll("entries");
+  return all
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .slice(0, limit);
+}
 export async function deleteEntry(id) {
   const db = await getDB();
   const entry = await db.get("entries", id);

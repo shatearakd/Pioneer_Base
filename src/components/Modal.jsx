@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Icon from "./Icon.jsx";
 
 // Lightweight centered modal. Closes on Escape and backdrop click.
 export default function Modal({ open, onClose, title, children, footer }) {
@@ -13,19 +14,19 @@ export default function Modal({ open, onClose, title, children, footer }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 grid place-items-center p-4 bg-surface-base/75 backdrop-blur-sm"
       onMouseDown={(e) => e.target === e.currentTarget && onClose?.()}
     >
-      <div className="w-full max-w-lg glass rounded-3xl p-6 fade-in max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-lg panel p-6 fade-in max-h-[90vh] overflow-y-auto">
         {title && (
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-header text-lg text-ink">{title}</h2>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-headline-md text-headline-md text-text-primary">{title}</h2>
             <button
               onClick={onClose}
-              className="text-ink/40 hover:text-ink text-xl leading-none"
+              className="h-9 w-9 grid place-items-center rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-container-high transition-colors"
               aria-label="Close"
             >
-              ×
+              <Icon name="close" className="text-[20px]" />
             </button>
           </div>
         )}

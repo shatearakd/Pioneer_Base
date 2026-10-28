@@ -9,6 +9,7 @@ import {
   biometricsEnrolled,
   unlockWithBiometrics,
 } from "../lib/auth.js";
+import Icon from "../components/Icon.jsx";
 
 export default function Unlock() {
   const navigate = useNavigate();
@@ -100,17 +101,20 @@ export default function Unlock() {
 
   return (
     <div className="min-h-screen grid place-items-center px-6">
-      <div className="w-full max-w-sm glass rounded-3xl p-8 fade-in">
+      <div className="w-full max-w-sm panel p-8 fade-in">
         <div className="text-center mb-8">
-          <div className="mx-auto mb-4 h-14 w-14 rounded-2xl grid place-items-center bg-gradient-to-br from-teal to-azure text-base-950 font-title text-2xl font-bold">
-            P
+          <div className="mx-auto mb-4 h-14 w-14 rounded-xl grid place-items-center bg-primary/10 text-primary border border-primary/30">
+            <Icon name="science" className="text-[30px]" />
           </div>
-          <h1 className="font-title text-xl tracking-widest text-ink">
-            PIONEER_BASE
+          <h1 className="font-headline-md text-headline-md tracking-[0.2em] text-text-primary">
+            PIONEER BASE
           </h1>
-          <p className="font-header text-ink/60 mt-1 text-sm">
-            {needsSetup ? "Create your passcode" : "Welcome back"}
-          </p>
+          <div className="flex items-center justify-center gap-1.5 mt-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-status-nominal animate-pulse" />
+            <p className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">
+              {needsSetup ? "Create your passcode" : "Welcome back"}
+            </p>
+          </div>
         </div>
 
         <form onSubmit={needsSetup ? handleSetup : handleUnlock} className="space-y-3">
@@ -120,7 +124,7 @@ export default function Unlock() {
             inputMode="text"
             autoComplete={needsSetup ? "new-password" : "current-password"}
             placeholder="Passcode"
-            className="field text-center tracking-widest"
+            className="field-mono text-center tracking-[0.3em]"
             value={code}
             onChange={(e) => setCode(e.target.value)}
           />
@@ -129,15 +133,21 @@ export default function Unlock() {
               type="password"
               autoComplete="new-password"
               placeholder="Confirm passcode"
-              className="field text-center tracking-widest"
+              className="field-mono text-center tracking-[0.3em]"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
             />
           )}
 
-          {error && <p className="text-tangerine text-sm text-center">{error}</p>}
+          {error && (
+            <p className="text-status-critical font-label-sm text-label-sm text-center flex items-center justify-center gap-1">
+              <Icon name="error" className="text-[15px]" />
+              {error}
+            </p>
+          )}
 
           <button type="submit" className="btn-primary w-full" disabled={busy}>
+            <Icon name={needsSetup ? "lock" : "lock_open"} className="text-[18px]" />
             {needsSetup ? "Create passcode" : "Unlock"}
           </button>
         </form>
@@ -148,23 +158,14 @@ export default function Unlock() {
             className="btn-ghost w-full mt-3"
             disabled={busy}
           >
-            {fingerprintIcon} Use fingerprint
+            <Icon name="fingerprint" className="text-[18px]" /> Use fingerprint
           </button>
         )}
 
-        <p className="text-center text-ink/40 text-xs mt-6 font-body">
+        <p className="text-center text-text-muted font-body-sm text-body-sm mt-6">
           Everything stays on this device. No account, no cloud.
         </p>
       </div>
     </div>
   );
 }
-
-const fingerprintIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
-    <path d="M12 11c0 3 0 5-1 7" />
-    <path d="M8 10a4 4 0 0 1 8 0c0 3 0 6-1 8" />
-    <path d="M4 12a8 8 0 0 1 16 0c0 2 0 4-.5 6" />
-    <path d="M12 14c0 2 0 3-.5 4.5" />
-  </svg>
-);

@@ -1,28 +1,37 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useApp } from "../store.js";
-
-const I = (paths) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-    {paths}
-  </svg>
-);
-
-const icons = {
-  home: I(<><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></>),
-  tree: I(<><rect x="3" y="3" width="7" height="7" rx="2" /><rect x="14" y="14" width="7" height="7" rx="2" /><path d="M6.5 10v4a3 3 0 0 0 3 3H14" /></>),
-  bulb: I(<><path d="M9 18h6" /><path d="M10 21h4" /><path d="M12 3a6 6 0 0 0-4 10c.7.7 1 1.3 1 2h6c0-.7.3-1.3 1-2a6 6 0 0 0-4-10z" /></>),
-  search: I(<><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></>),
-  gear: I(<><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z" /></>),
-  lock: I(<><rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></>),
-};
+import Icon from "./Icon.jsx";
 
 const nav = [
-  { to: "/", label: "Dashboard", icon: icons.home, end: true },
-  { to: "/genres", label: "Folders", icon: icons.tree },
-  { to: "/ideas", label: "Ideas", icon: icons.bulb },
-  { to: "/search", label: "Search", icon: icons.search },
-  { to: "/settings", label: "Settings", icon: icons.gear },
+  { to: "/", label: "Dashboard", short: "Dash", icon: "space_dashboard", end: true },
+  { to: "/genres", label: "Folder Tree", short: "Tree", icon: "account_tree" },
+  { to: "/ideas", label: "Idea Vault", short: "Ideas", icon: "lightbulb" },
+  { to: "/search", label: "Search", short: "Search", icon: "search" },
+  { to: "/settings", label: "Settings", short: "Config", icon: "settings" },
 ];
+
+function Brand({ compact = false }) {
+  return (
+    <div className="flex items-center gap-2 min-w-0">
+      <span className="h-9 w-9 rounded-lg grid place-items-center bg-primary/10 text-primary border border-primary/30 flex-shrink-0">
+        <Icon name="science" className="text-[20px]" />
+      </span>
+      <div className="flex flex-col min-w-0">
+        <span className="font-headline-sm text-headline-sm text-text-primary tracking-tight truncate">
+          PIONEER BASE
+        </span>
+        {!compact && (
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-status-nominal animate-pulse" />
+            <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">
+              Standalone // Offline
+            </span>
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Shell() {
   const lock = useApp((s) => s.lock);
@@ -36,47 +45,69 @@ export default function Shell() {
   return (
     <div className="min-h-screen md:flex">
       {/* Sidebar (desktop) */}
-      <aside className="hidden md:flex md:flex-col md:w-60 shrink-0 p-4 gap-2 border-r border-white/10">
-        <div className="flex items-center gap-3 px-2 py-3 mb-2">
-          <div className="h-9 w-9 rounded-xl grid place-items-center bg-gradient-to-br from-teal to-azure text-base-950 font-title font-bold">
-            P
-          </div>
-          <span className="font-title text-sm tracking-widest">PIONEER_BASE</span>
+      <aside className="hidden md:flex md:flex-col md:w-64 shrink-0 p-4 gap-1 border-r border-surface-border bg-surface-panel/60 backdrop-blur-xl">
+        <div className="px-2 py-3 mb-2">
+          <Brand />
         </div>
         {nav.map((n) => (
           <NavItem key={n.to} {...n} />
         ))}
-        <div className="mt-auto">
+        <div className="mt-auto pt-4">
+          <div className="panel-2 p-3 mb-3">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-status-nominal animate-pulse" />
+              <span className="label">System Nominal</span>
+            </div>
+            <p className="font-body-sm text-body-sm text-text-muted mt-1">
+              All data stored locally on this device.
+            </p>
+          </div>
           <button onClick={handleLock} className="btn-ghost w-full">
-            {icons.lock} Lock
+            <Icon name="lock" className="text-[18px]" /> Lock Vault
           </button>
         </div>
       </aside>
 
+      {/* Mobile top header */}
+      <header className="md:hidden sticky top-0 z-40 safe-t bg-surface-panel/85 backdrop-blur-xl border-b border-surface-border">
+        <div className="h-14 px-gutter-mobile flex items-center justify-between">
+          <Brand compact />
+          <button
+            onClick={handleLock}
+            className="h-10 w-10 grid place-items-center rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-container-high transition-colors"
+            title="Lock"
+          >
+            <Icon name="lock" className="text-[20px]" />
+          </button>
+        </div>
+      </header>
+
       {/* Main */}
-      <main className="flex-1 min-w-0 pb-24 md:pb-8">
-        <div className="mx-auto max-w-5xl px-4 pt-6 md:px-8">
+      <main className="flex-1 min-w-0 pb-28 md:pb-10">
+        <div className="mx-auto max-w-5xl px-4 pt-5 md:px-8 md:pt-8">
           <Outlet />
         </div>
       </main>
 
       {/* Bottom nav (mobile) */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass border-t border-white/10 flex justify-around px-2 py-2">
-        {nav.map((n) => (
-          <NavLink
-            key={n.to}
-            to={n.to}
-            end={n.end}
-            className={({ isActive }) =>
-              `flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[11px] ${
-                isActive ? "text-teal" : "text-ink/55"
-              }`
-            }
-          >
-            {n.icon}
-            {n.label}
-          </NavLink>
-        ))}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 safe-b bg-surface-panel/90 backdrop-blur-xl border-t border-surface-border shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+        <div className="flex justify-around items-stretch h-16 px-1">
+          {nav.map((n) => (
+            <NavLink
+              key={n.to}
+              to={n.to}
+              end={n.end}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-0.5 min-w-[56px] px-2 transition-colors ${
+                  isActive ? "text-primary" : "text-text-muted hover:text-on-surface"
+                }`
+              }
+            >
+              <Icon name={n.icon} className="text-[22px]" />
+              <span className="font-label-sm text-label-sm tracking-tight">{n.short}</span>
+            </NavLink>
+          ))}
+        </div>
       </nav>
     </div>
   );
@@ -88,12 +119,14 @@ function NavItem({ to, label, icon, end }) {
       to={to}
       end={end}
       className={({ isActive }) =>
-        `flex items-center gap-3 rounded-2xl px-3 py-2.5 font-header text-sm transition ${
-          isActive ? "bg-teal/15 text-teal" : "text-ink/70 hover:bg-white/5"
+        `flex items-center gap-3 rounded-lg px-3 py-2.5 font-label-md text-label-md tracking-wide transition-colors ${
+          isActive
+            ? "bg-primary/10 text-primary border border-primary/30"
+            : "text-on-surface-variant border border-transparent hover:bg-surface-container-high hover:text-text-primary"
         }`
       }
     >
-      {icon}
+      <Icon name={icon} className="text-[20px]" />
       {label}
     </NavLink>
   );

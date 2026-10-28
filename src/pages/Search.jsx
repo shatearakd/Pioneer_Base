@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { search } from "../db.js";
 import EmptyState from "../components/EmptyState.jsx";
+import Icon from "../components/Icon.jsx";
+import { entryMeta, accent, kindMeta } from "../lib/ui.js";
 
 export default function Search() {
   const [params, setParams] = useSearchParams();
@@ -35,79 +37,116 @@ export default function Search() {
     results && results.projects.length + results.entries.length + results.ideas.length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <header>
-        <h1 className="font-title text-2xl tracking-wide text-ink">Search</h1>
-        <p className="font-header text-ink/50 text-sm mt-1">
+        <h1 className="font-headline-lg text-headline-lg text-text-primary">Search</h1>
+        <p className="font-body-sm text-body-sm text-text-muted mt-1">
           Find projects, log entries, and ideas by keyword.
         </p>
       </header>
 
       <form onSubmit={onSubmit} className="flex gap-2">
-        <input
-          className="field"
-          placeholder="Search keywords…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          autoFocus
-        />
+        <div className="relative flex-1">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-muted">
+            <Icon name="search" className="text-[18px]" />
+          </span>
+          <input
+            className="field pl-10"
+            placeholder="Search keywords…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            autoFocus
+          />
+        </div>
         <button className="btn-primary" type="submit">
           Search
         </button>
       </form>
 
-      {busy && <p className="text-ink/40 text-sm">Searching…</p>}
+      {busy && (
+        <p className="font-label-md text-label-md text-text-muted flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> Searching…
+        </p>
+      )}
 
       {results && total === 0 && !busy && (
-        <EmptyState title="No matches." hint="Try a different keyword." />
+        <EmptyState icon="search_off" title="No matches." hint="Try a different keyword." />
       )}
 
       {results && total > 0 && (
         <div className="space-y-6">
           {results.projects.length > 0 && (
-            <Section title={`Projects (${results.projects.length})`}>
-              {results.projects.map((p) => (
-                <Link
-                  key={p.id}
-                  to={`/project/${p.id}`}
-                  className="glass rounded-2xl p-3 block hover:border-teal/40 transition"
-                >
-                  <div className="text-xs text-ink/50">{p.kind}</div>
-                  <div className="font-header text-ink">{p.title}</div>
-                  {p.overview && <p className="text-sm text-ink/55 line-clamp-1">{p.overview}</p>}
-                </Link>
-              ))}
+            <Section title="Projects" count={results.projects.length}>
+              {results.projects.map((p) => {
+                const km = kindMeta(p.kind);
+                const a = accent(km.accent);
+                return (
+                  <Link
+                    key={p.id}
+                    to={`/project/${p.id}`}
+                    className="panel-2 p-3 flex items-center gap-3 hover:border-primary/40 transition-colors"
+                  >
+                    <span className={`h-9 w-9 rounded-lg grid place-items-center ${a.bg} ${a.text} flex-shrink-0`}>
+                      <Icon name={km.icon} className="text-[18px]" />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="font-headline-sm text-body-md text-text-primary truncate">
+                        {p.title}
+                      </div>
+                      {p.overview && (
+                        <p className="font-body-sm text-body-sm text-text-muted line-clamp-1">
+                          {p.overview}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
             </Section>
           )}
 
           {results.entries.length > 0 && (
-            <Section title={`Log entries (${results.entries.length})`}>
-              {results.entries.map((e) => (
-                <Link
-                  key={e.id}
-                  to={`/project/${e.projectId}`}
-                  className="glass rounded-2xl p-3 block hover:border-teal/40 transition"
-                >
-                  <div className="text-xs text-ink/50">{e.kind}</div>
-                  <div className="font-header text-ink">{e.title || "(untitled)"}</div>
-                  {e.body && <p className="text-sm text-ink/55 line-clamp-2">{e.body}</p>}
-                </Link>
-              ))}
+            <Section title="Log entries" count={results.entries.length}>
+              {results.entries.map((e) => {
+                const m = entryMeta(e.kind);
+                const a = accent(m.accent);
+                return (
+                  <Link
+                    key={e.id}
+                    to={`/project/${e.projectId}`}
+                    className="panel-2 p-3 flex items-center gap-3 hover:border-primary/40 transition-colors"
+                  >
+                    <span className={`h-9 w-9 rounded-lg grid place-items-center ${a.bg} ${a.text} flex-shrink-0`}>
+                      <Icon name={m.icon} className="text-[18px]" />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="font-headline-sm text-body-md text-text-primary truncate">
+                        {e.title || "(untitled)"}
+                      </div>
+                      {e.body && (
+                        <p className="font-body-sm text-body-sm text-text-muted line-clamp-2">
+                          {e.body}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
             </Section>
           )}
 
           {results.ideas.length > 0 && (
-            <Section title={`Ideas (${results.ideas.length})`}>
+            <Section title="Ideas" count={results.ideas.length}>
               {results.ideas.map((i) => (
                 <Link
                   key={i.number}
                   to="/ideas"
-                  className="glass rounded-2xl p-3 block hover:border-teal/40 transition"
+                  className="panel-2 p-3 flex items-center gap-3 hover:border-primary/40 transition-colors"
                 >
-                  <span className="font-title text-teal text-xs mr-2">
+                  <span className="index-tag w-12 flex-shrink-0">
                     #{String(i.number).padStart(3, "0")}
                   </span>
-                  <span className="text-ink text-sm">{i.text}</span>
+                  <span className="font-body-md text-body-md text-on-surface truncate">{i.text}</span>
                 </Link>
               ))}
             </Section>
@@ -118,10 +157,12 @@ export default function Search() {
   );
 }
 
-function Section({ title, children }) {
+function Section({ title, count, children }) {
   return (
     <section>
-      <h2 className="font-header text-sm uppercase tracking-widest text-ink/45 mb-2">{title}</h2>
+      <h2 className="label mb-2">
+        {title} ({count})
+      </h2>
       <div className="space-y-2">{children}</div>
     </section>
   );

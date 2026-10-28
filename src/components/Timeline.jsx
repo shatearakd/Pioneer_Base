@@ -1,55 +1,55 @@
-function fmt(iso) {
-  try {
-    return new Date(iso).toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  } catch {
-    return "";
-  }
-}
+import Icon from "./Icon.jsx";
+import { fmtDate } from "../lib/ui.js";
 
-// Vertical timeline of milestones. onToggle(milestone) flips done state.
+// Vertical lifecycle timeline of milestones. onToggle(milestone) flips done
+// state; onDelete(milestone) removes it.
 export default function Timeline({ milestones = [], onToggle, onDelete }) {
   if (!milestones.length) {
     return (
-      <p className="text-ink/45 text-sm italic">No timeline milestones yet.</p>
+      <p className="font-body-sm text-body-sm text-text-muted italic">
+        No lifecycle milestones logged yet.
+      </p>
     );
   }
   const today = new Date().toISOString();
   return (
-    <ol className="relative ml-3 border-l border-white/10 space-y-5">
+    <ol className="relative ml-2 border-l-2 border-dashed border-surface-border space-y-4">
       {milestones.map((m) => {
         const upcoming = !m.done && m.date > today;
+        const dot = m.done ? "bg-status-nominal border-status-nominal" : upcoming ? "bg-surface-panel border-secondary" : "bg-surface-panel border-tertiary";
         return (
           <li key={m.id} className="ml-5 relative">
             <span
-              className={`absolute -left-[26px] top-1 h-3.5 w-3.5 rounded-full border-2 ${
-                m.done
-                  ? "bg-teal border-teal"
-                  : upcoming
-                  ? "bg-base-900 border-azure"
-                  : "bg-base-900 border-tangerine"
-              }`}
+              className={`absolute -left-[26px] top-1 h-3.5 w-3.5 rounded-full border-2 ${dot}`}
             />
             <div className="flex items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <button
                   onClick={() => onToggle?.(m)}
-                  className={`font-header text-left ${m.done ? "line-through text-ink/45" : "text-ink"}`}
+                  className={`font-body-md text-body-md text-left ${
+                    m.done ? "line-through text-text-muted" : "text-on-surface"
+                  }`}
                 >
                   {m.title}
                 </button>
-                <div className="text-xs text-ink/45 mt-0.5">{fmt(m.date)}</div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="font-label-sm text-label-sm text-text-muted">{fmtDate(m.date)}</span>
+                  <span
+                    className={`font-label-sm text-label-sm ${
+                      m.done ? "text-status-nominal" : upcoming ? "text-secondary" : "text-tertiary"
+                    }`}
+                  >
+                    {m.done ? "DONE" : upcoming ? "QUEUED" : "PENDING"}
+                  </span>
+                </div>
               </div>
               {onDelete && (
                 <button
                   onClick={() => onDelete(m)}
-                  className="text-ink/30 hover:text-tangerine text-xs"
+                  className="text-text-muted hover:text-status-critical transition-colors"
                   title="Remove milestone"
                 >
-                  ✕
+                  <Icon name="close" className="text-[16px]" />
                 </button>
               )}
             </div>

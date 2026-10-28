@@ -1,13 +1,13 @@
-export default function EmptyState({ title = "Nothing yet.", hint, action }) {
+import Icon from "./Icon.jsx";
+
+export default function EmptyState({ title = "Nothing yet.", hint, action, icon = "science" }) {
   return (
-    <div className="glass rounded-3xl p-10 text-center fade-in">
-      <div className="mx-auto mb-4 h-12 w-12 rounded-2xl grid place-items-center bg-white/5 text-teal">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        </svg>
+    <div className="panel p-10 text-center fade-in flex flex-col items-center">
+      <div className="mb-4 h-14 w-14 rounded-full grid place-items-center bg-surface-container-high text-primary border border-surface-border">
+        <Icon name={icon} className="text-[28px]" />
       </div>
-      <p className="font-header text-lg text-ink">{title}</p>
-      {hint && <p className="text-ink/50 text-sm mt-1">{hint}</p>}
+      <p className="font-headline-sm text-headline-sm text-text-primary">{title}</p>
+      {hint && <p className="font-body-sm text-body-sm text-text-muted mt-1.5 max-w-sm">{hint}</p>}
       {action && <div className="mt-5">{action}</div>}
     </div>
   );

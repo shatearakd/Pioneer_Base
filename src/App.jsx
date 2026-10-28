@@ -16,8 +16,11 @@ function Gate({ children }) {
   if (!ready) {
     return (
       <div className="min-h-screen grid place-items-center">
-        <div className="font-title text-teal text-lg tracking-widest animate-pulse">
-          PIONEER_BASE
+        <div className="flex flex-col items-center gap-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
+          <div className="font-headline-sm text-headline-sm text-primary tracking-[0.3em] animate-pulse">
+            PIONEER BASE
+          </div>
         </div>
       </div>
     );

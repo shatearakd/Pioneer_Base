@@ -10,6 +10,15 @@ import {
   disableBiometrics,
 } from "../lib/auth.js";
 import { getDB } from "../db.js";
+import Icon from "../components/Icon.jsx";
+
+const STORE_META = {
+  projects: { label: "Projects", icon: "science" },
+  entries: { label: "Logs", icon: "dynamic_feed" },
+  media: { label: "Media", icon: "perm_media" },
+  ideas: { label: "Ideas", icon: "lightbulb" },
+  genres: { label: "Branches", icon: "account_tree" },
+};
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -17,6 +26,7 @@ export default function Settings() {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [msg, setMsg] = useState("");
+  const [msgErr, setMsgErr] = useState(false);
   const [bioSupported, setBioSupported] = useState(false);
   const [bioOn, setBioOn] = useState(false);
   const [counts, setCounts] = useState(null);
@@ -33,31 +43,27 @@ export default function Settings() {
   async function loadStats() {
     const db = await getDB();
     const stores = ["projects", "entries", "media", "ideas", "genres"];
-    const entries = await Promise.all(
-      stores.map(async (s) => [s, await db.count(s)])
-    );
+    const entries = await Promise.all(stores.map(async (s) => [s, await db.count(s)]));
     setCounts(Object.fromEntries(entries));
     if (navigator.storage?.estimate) {
-      const est = await navigator.storage.estimate();
-      setEstimate(est);
+      setEstimate(await navigator.storage.estimate());
     }
+  }
+
+  function flash(text, isErr = false) {
+    setMsg(text);
+    setMsgErr(isErr);
   }
 
   async function changePasscode(e) {
     e.preventDefault();
-    setMsg("");
-    if (!(await verifyPasscode(current))) {
-      setMsg("Current passcode is incorrect.");
-      return;
-    }
-    if (next.length < 4) {
-      setMsg("New passcode must be at least 4 characters.");
-      return;
-    }
+    flash("");
+    if (!(await verifyPasscode(current))) return flash("Current passcode is incorrect.", true);
+    if (next.length < 4) return flash("New passcode must be at least 4 characters.", true);
     await setPasscode(next);
     setCurrent("");
     setNext("");
-    setMsg("Passcode updated.");
+    flash("Passcode updated.");
   }
 
   async function toggleBio() {
@@ -70,7 +76,7 @@ export default function Settings() {
         setBioOn(true);
       }
     } catch {
-      setMsg("Could not change fingerprint setting.");
+      flash("Could not change fingerprint setting.", true);
     }
   }
 
@@ -86,75 +92,111 @@ export default function Settings() {
     return `${n.toFixed(1)} ${u[i]}`;
   }
 
+  const usagePct =
+    estimate?.quota ? Math.min(100, Math.round((estimate.usage / estimate.quota) * 100)) : 0;
+
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-5 max-w-2xl">
       <header>
-        <h1 className="font-title text-2xl tracking-wide text-ink">Settings</h1>
+        <h1 className="font-headline-lg text-headline-lg text-text-primary">Settings</h1>
+        <p className="font-body-sm text-body-sm text-text-muted mt-1">
+          Security and on-device storage.
+        </p>
       </header>
 
-      <section className="glass rounded-2xl p-5">
-        <h2 className="font-header text-ink mb-4">Security</h2>
+      {/* Security */}
+      <section className="panel p-space-md">
+        <h2 className="label mb-4 flex items-center gap-1.5">
+          <Icon name="shield_lock" className="text-[16px] text-primary" /> Security
+        </h2>
         <form onSubmit={changePasscode} className="space-y-3">
           <input
             type="password"
-            className="field"
+            className="field-mono"
             placeholder="Current passcode"
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
           />
           <input
             type="password"
-            className="field"
+            className="field-mono"
             placeholder="New passcode"
             value={next}
             onChange={(e) => setNext(e.target.value)}
           />
           <button className="btn-primary" type="submit">
-            Update passcode
+            <Icon name="key" className="text-[16px]" /> Update passcode
           </button>
-          {msg && <p className="text-sm text-teal">{msg}</p>}
+          {msg && (
+            <p
+              className={`font-label-sm text-label-sm flex items-center gap-1 ${
+                msgErr ? "text-status-critical" : "text-status-nominal"
+              }`}
+            >
+              <Icon name={msgErr ? "error" : "check_circle"} className="text-[15px]" />
+              {msg}
+            </p>
+          )}
         </form>
 
         {bioSupported && (
-          <label className="flex items-center justify-between mt-5 pt-5 border-t border-white/10">
-            <span className="text-sm text-ink/80">Unlock with fingerprint / device</span>
-            <button
-              onClick={toggleBio}
-              className={`btn ${bioOn ? "bg-teal text-base-950" : "btn-ghost"}`}
-            >
+          <div className="flex items-center justify-between mt-5 pt-5 border-t border-surface-border/70">
+            <span className="flex items-center gap-2 font-body-md text-body-md text-on-surface">
+              <Icon name="fingerprint" className="text-[18px] text-secondary" />
+              Unlock with fingerprint / device
+            </span>
+            <button onClick={toggleBio} className={bioOn ? "btn-primary" : "btn-ghost"}>
               {bioOn ? "Enabled" : "Enable"}
             </button>
-          </label>
+          </div>
         )}
       </section>
 
-      <section className="glass rounded-2xl p-5">
-        <h2 className="font-header text-ink mb-4">On-device storage</h2>
+      {/* Storage */}
+      <section className="panel p-space-md">
+        <h2 className="label mb-4 flex items-center gap-1.5">
+          <Icon name="database" className="text-[16px] text-secondary" /> On-device storage
+        </h2>
         {counts ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-            {Object.entries(counts).map(([k, v]) => (
-              <div key={k} className="rounded-xl bg-base-800/70 border border-white/10 p-3">
-                <div className="text-ink/50 capitalize">{k}</div>
-                <div className="font-title text-lg text-ink">{v}</div>
-              </div>
-            ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {Object.entries(counts).map(([k, v]) => {
+              const m = STORE_META[k] || { label: k, icon: "folder" };
+              return (
+                <div key={k} className="panel-2 p-3">
+                  <div className="flex items-center gap-1.5 font-label-sm text-label-sm text-text-muted uppercase tracking-wider">
+                    <Icon name={m.icon} className="text-[14px]" /> {m.label}
+                  </div>
+                  <div className="font-telemetry-val text-telemetry-val text-text-primary mt-1">
+                    {v}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <p className="text-ink/40 text-sm">Loading…</p>
+          <p className="font-body-sm text-body-sm text-text-muted">Loading…</p>
         )}
         {estimate && (
-          <p className="text-xs text-ink/40 mt-3">
-            Using {humanSize(estimate.usage)} of {humanSize(estimate.quota)} available on this
-            device.
-          </p>
+          <div className="mt-4">
+            <div className="w-full bg-surface-container-lowest rounded-full h-1.5 overflow-hidden">
+              <div className="bg-primary h-full rounded-full" style={{ width: `${usagePct}%` }} />
+            </div>
+            <p className="font-label-sm text-label-sm text-text-muted mt-2">
+              Using {humanSize(estimate.usage)} of {humanSize(estimate.quota)} available.
+            </p>
+          </div>
         )}
-        <p className="text-xs text-ink/40 mt-2">
+        <p className="font-body-sm text-body-sm text-text-muted mt-3 flex items-center gap-1.5">
+          <Icon name="cloud_off" className="text-[15px] text-status-nominal" />
           All data lives in this browser on this device. Nothing is uploaded.
         </p>
       </section>
 
-      <section className="glass rounded-2xl p-5">
-        <h2 className="font-header text-ink mb-3">Session</h2>
+      {/* Session */}
+      <section className="panel p-space-md">
+        <h2 className="label mb-3 flex items-center gap-1.5">
+          <Icon name="lock" className="text-[16px] text-tertiary" /> Session
+        </h2>
         <button
           className="btn-ghost"
           onClick={() => {
@@ -162,12 +204,12 @@ export default function Settings() {
             navigate("/unlock", { replace: true });
           }}
         >
-          Lock now
+          <Icon name="lock" className="text-[16px]" /> Lock now
         </button>
       </section>
 
-      <p className="text-center text-ink/30 text-xs font-header tracking-widest">
-        PIONEER_BASE · local-first
+      <p className="text-center text-text-muted font-label-sm text-label-sm tracking-widest uppercase">
+        Pioneer Base · Local-first
       </p>
     </div>
   );

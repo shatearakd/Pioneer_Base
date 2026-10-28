@@ -156,3 +156,37 @@ body {
   background: rgba(122, 146, 158, 0.28);
   border-radius: 999px;
 }
+
+@media print {
+  .no-print,
+  aside,
+  header,
+  nav {
+    display: none !important;
+  }
+  html,
+  body,
+  #root {
+    background: #fff !important;
+    background-image: none !important;
+    color: #111 !important;
+    min-height: 0;
+  }
+  main {
+    padding: 0 !important;
+  }
+  .print-folio {
+    box-shadow: none !important;
+    border: 1px solid #c5c5c5 !important;
+    break-inside: avoid;
+  }
+  .field,
+  textarea,
+  select,
+  input {
+    border: 1px solid #bbb !important;
+    background: #fff !important;
+    color: #111 !important;
+    box-shadow: none !important;
+  }
+}

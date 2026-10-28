@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "../store.js";
 import {
   setPasscode,
@@ -190,6 +190,26 @@ export default function Settings() {
           <Icon name="cloud_off" className="text-[15px] text-status-nominal" />
           All data lives in this browser on this device. Nothing is uploaded.
         </p>
+      </section>
+
+      <section className="panel p-space-md">
+        <h2 className="label mb-3 flex items-center gap-1.5">
+          <Icon name="inventory_2" className="text-[16px] text-primary" /> Vaults & export
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-2">
+          <Link to="/archive" className="btn-ghost justify-start">
+            <Icon name="lock" className="text-[16px]" /> Archive vault
+          </Link>
+          <Link to="/export" className="btn-ghost justify-start">
+            <Icon name="folder_zip" className="text-[16px]" /> Batch export
+          </Link>
+          <Link to="/search" className="btn-ghost justify-start">
+            <Icon name="search" className="text-[16px]" /> Search
+          </Link>
+          <Link to="/genres" className="btn-ghost justify-start">
+            <Icon name="account_tree" className="text-[16px]" /> Research vault
+          </Link>
+        </div>
       </section>
 
       {/* Session */}

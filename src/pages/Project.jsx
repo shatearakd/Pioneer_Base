@@ -14,6 +14,9 @@ import {
   touchProject,
   setPrimaryProject,
   deleteProject,
+  archiveProject,
+  reopenProject,
+  isArchived,
 } from "../db.js";
 import { useApp } from "../store.js";
 import { exportMarkdown, exportJSON } from "../lib/export.js";
@@ -158,6 +161,17 @@ export default function Project() {
     bumpData();
     navigate("/");
   }
+  async function sealArchive() {
+    if (!window.confirm("Archive this project into cold storage? You can reopen it later.")) return;
+    await archiveProject(id);
+    bumpData();
+    navigate("/archive");
+  }
+  async function unseal() {
+    await reopenProject(id);
+    bumpData();
+    refresh();
+  }
   function jumpToComposer() {
     setTab("logs");
     setTimeout(() => composerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
@@ -205,7 +219,7 @@ export default function Project() {
             )}
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
-            {!project.isPrimary && (
+            {!project.isPrimary && !isArchived(project) && (
               <button
                 className="h-9 w-9 grid place-items-center rounded-lg text-tertiary hover:bg-surface-container-high transition-colors"
                 onClick={makePrimary}
@@ -258,12 +272,24 @@ export default function Project() {
 
         {/* Export row */}
         <div className="relative flex flex-wrap gap-2 mt-4 pt-4 border-t border-surface-border/70">
+          <Link className="btn-primary" to={`/project/${id}/report`}>
+            <Icon name="picture_as_pdf" className="text-[16px]" /> Lab PDF
+          </Link>
           <button className="btn-ghost" onClick={() => exportMarkdown(id)}>
             <Icon name="description" className="text-[16px]" /> Export .md
           </button>
           <button className="btn-ghost" onClick={() => exportJSON(id)}>
             <Icon name="data_object" className="text-[16px]" /> Export .json
           </button>
+          {isArchived(project) ? (
+            <button className="btn-ghost text-status-nominal" onClick={unseal}>
+              <Icon name="lock_open" className="text-[16px]" /> Reopen
+            </button>
+          ) : (
+            <button className="btn-ghost text-tertiary" onClick={sealArchive}>
+              <Icon name="inventory_2" className="text-[16px]" /> Archive
+            </button>
+          )}
           <button className="btn-danger ml-auto" onClick={removeProject}>
             <Icon name="delete" className="text-[16px]" /> Delete
           </button>
@@ -427,14 +453,14 @@ export default function Project() {
           <Icon name="mic" className="text-[16px]" />
           <span className="hidden xs:inline">Voice</span>
         </button>
-        <button
+        <Link
           className="btn-ghost text-tertiary"
-          onClick={() => exportMarkdown(id)}
-          title="Generate report"
+          to={`/project/${id}/report`}
+          title="Lab PDF report"
         >
-          <Icon name="print" className="text-[16px]" />
+          <Icon name="picture_as_pdf" className="text-[16px]" />
           <span className="hidden xs:inline">Report</span>
-        </button>
+        </Link>
       </div>
 
       <Modal open={showEdit} onClose={() => setShowEdit(false)} title="Edit project">

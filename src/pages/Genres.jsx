@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { listGenres, listProjects } from "../db.js";
+import { Link, useNavigate } from "react-router-dom";
+import { listGenres, listActiveProjects } from "../db.js";
 import { useApp } from "../store.js";
 import FolderTree from "../components/FolderTree.jsx";
 import EmptyState from "../components/EmptyState.jsx";
@@ -25,7 +25,7 @@ export default function Genres() {
     (async () => {
       setStatus("loading");
       try {
-        const [g, p] = await Promise.all([listGenres(), listProjects()]);
+        const [g, p] = await Promise.all([listGenres(), listActiveProjects()]);
         if (!alive) return;
         setGenres(g);
         setProjects(p);
@@ -86,7 +86,10 @@ export default function Genres() {
             </span>
           </div>
           <p className="font-body-sm text-body-sm text-text-muted mt-1">
-            Your projects, experiments, and inventions by genre.
+            Active research vault only.{" "}
+            <Link to="/archive" className="text-primary hover:underline">
+              Open cold-storage archive →
+            </Link>
           </p>
         </div>
         <div className="flex gap-2">

@@ -4,7 +4,7 @@ import {
   getPrimaryProject,
   getLastOpenedProject,
   listGenres,
-  listProjects,
+  listActiveProjects,
   listProjectsByGenre,
   listMilestones,
   listEntries,
@@ -54,7 +54,7 @@ export default function Home() {
           getPrimaryProject(),
           getLastOpenedProject(),
           listGenres(),
-          listProjects(),
+          listActiveProjects(),
           recentEntries(6),
         ]);
         if (!alive) return;

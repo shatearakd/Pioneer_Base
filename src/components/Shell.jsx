@@ -2,12 +2,22 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useApp } from "../store.js";
 import Icon from "./Icon.jsx";
 
-const nav = [
-  { to: "/", label: "Dashboard", short: "Dash", icon: "space_dashboard", end: true },
-  { to: "/genres", label: "Folder Tree", short: "Tree", icon: "account_tree" },
-  { to: "/ideas", label: "Idea Vault", short: "Ideas", icon: "lightbulb" },
-  { to: "/search", label: "Search", short: "Search", icon: "search" },
-  { to: "/settings", label: "Settings", short: "Config", icon: "settings" },
+const desktopNav = [
+  { to: "/", label: "Dashboard", icon: "space_dashboard", end: true },
+  { to: "/genres", label: "Research Vault", icon: "account_tree" },
+  { to: "/archive", label: "Archive Vault", icon: "inventory_2" },
+  { to: "/ideas", label: "Spark Incubator", icon: "lightbulb" },
+  { to: "/export", label: "Batch Export", icon: "folder_zip" },
+  { to: "/search", label: "Search", icon: "search" },
+  { to: "/settings", label: "Settings", icon: "settings" },
+];
+
+const mobileNav = [
+  { to: "/", label: "Dash", icon: "space_dashboard", end: true },
+  { to: "/genres", label: "Tree", icon: "account_tree" },
+  { to: "/ideas", label: "Ideas", icon: "lightbulb" },
+  { to: "/archive", label: "Vault", icon: "inventory_2" },
+  { to: "/settings", label: "Config", icon: "settings" },
 ];
 
 function Brand({ compact = false }) {
@@ -45,11 +55,11 @@ export default function Shell() {
   return (
     <div className="min-h-screen md:flex">
       {/* Sidebar (desktop) */}
-      <aside className="hidden md:flex md:flex-col md:w-64 shrink-0 p-4 gap-1 border-r border-surface-border bg-surface-panel/60 backdrop-blur-xl">
+      <aside className="no-print hidden md:flex md:flex-col md:w-64 shrink-0 p-4 gap-1 border-r border-surface-border bg-surface-panel/60 backdrop-blur-xl">
         <div className="px-2 py-3 mb-2">
           <Brand />
         </div>
-        {nav.map((n) => (
+        {desktopNav.map((n) => (
           <NavItem key={n.to} {...n} />
         ))}
         <div className="mt-auto pt-4">
@@ -69,7 +79,7 @@ export default function Shell() {
       </aside>
 
       {/* Mobile top header */}
-      <header className="md:hidden sticky top-0 z-40 safe-t bg-surface-panel/85 backdrop-blur-xl border-b border-surface-border">
+      <header className="no-print md:hidden sticky top-0 z-40 safe-t bg-surface-panel/85 backdrop-blur-xl border-b border-surface-border">
         <div className="h-14 px-gutter-mobile flex items-center justify-between">
           <Brand compact />
           <button
@@ -90,9 +100,9 @@ export default function Shell() {
       </main>
 
       {/* Bottom nav (mobile) */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 safe-b bg-surface-panel/90 backdrop-blur-xl border-t border-surface-border shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+      <nav className="no-print md:hidden fixed bottom-0 inset-x-0 z-40 safe-b bg-surface-panel/90 backdrop-blur-xl border-t border-surface-border shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
         <div className="flex justify-around items-stretch h-16 px-1">
-          {nav.map((n) => (
+          {mobileNav.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
@@ -104,7 +114,7 @@ export default function Shell() {
               }
             >
               <Icon name={n.icon} className="text-[22px]" />
-              <span className="font-label-sm text-label-sm tracking-tight">{n.short}</span>
+              <span className="font-label-sm text-label-sm tracking-tight">{n.label}</span>
             </NavLink>
           ))}
         </div>

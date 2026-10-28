@@ -9,6 +9,9 @@ import Genres from "./pages/Genres.jsx";
 import Ideas from "./pages/Ideas.jsx";
 import Search from "./pages/Search.jsx";
 import Settings from "./pages/Settings.jsx";
+import Archive from "./pages/Archive.jsx";
+import Export from "./pages/Export.jsx";
+import Report from "./pages/Report.jsx";
 
 function Gate({ children }) {
   const { ready, unlocked } = useApp();
@@ -47,8 +50,11 @@ export default function App() {
       >
         <Route path="/" element={<Home />} />
         <Route path="/project/:id" element={<Project />} />
+        <Route path="/project/:id/report" element={<Report />} />
         <Route path="/genres" element={<Genres />} />
+        <Route path="/archive" element={<Archive />} />
         <Route path="/ideas" element={<Ideas />} />
+        <Route path="/export" element={<Export />} />
         <Route path="/search" element={<Search />} />
         <Route path="/settings" element={<Settings />} />
       </Route>

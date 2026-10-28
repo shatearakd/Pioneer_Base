@@ -10,6 +10,8 @@ export const uid = () =>
 
 export const now = () => new Date().toISOString();
 
+export const isArchived = (p) => !!(p && (p.archivedAt || p.status === "archived"));
+
 let _dbPromise = null;
 
 export function getDB() {
@@ -111,34 +113,65 @@ export async function deleteGenre(id) {
 export async function listProjects() {
   return (await getDB()).getAll("projects");
 }
+export async function listActiveProjects() {
+  return (await listProjects()).filter((p) => !isArchived(p));
+}
+export async function listArchivedProjects() {
+  return (await listProjects())
+    .filter(isArchived)
+    .sort((a, b) => (b.archivedAt || b.updatedAt || "").localeCompare(a.archivedAt || a.updatedAt || ""));
+}
 export async function listProjectsByGenre(genreId) {
-  return (await getDB()).getAllFromIndex("projects", "genreId", genreId);
+  const all = await (await getDB()).getAllFromIndex("projects", "genreId", genreId);
+  return all.filter((p) => !isArchived(p));
 }
 export async function getProject(id) {
   return (await getDB()).get("projects", id);
 }
 export async function getPrimaryProject() {
-  const all = await listProjects();
+  const all = await listActiveProjects();
   return all.find((p) => p.isPrimary) || null;
 }
 export async function saveProject(project) {
   const db = await getDB();
   const existing = project.id ? await db.get("projects", project.id) : null;
   const record = {
-    id: project.id || uid(),
-    genreId: project.genreId ?? existing?.genreId ?? null,
+    ...(existing || {}),
+    id: project.id || existing?.id || uid(),
+    genreId: project.genreId !== undefined ? project.genreId : existing?.genreId ?? null,
     title: project.title?.trim() || existing?.title || "Untitled project",
     kind: project.kind || existing?.kind || "project",
-    overview: project.overview ?? existing?.overview ?? "",
+    overview: project.overview !== undefined ? project.overview : existing?.overview ?? "",
     status: project.status || existing?.status || "active",
     isPrimary: project.isPrimary ?? existing?.isPrimary ?? false,
-    tags: project.tags ?? existing?.tags ?? [],
+    tags: project.tags !== undefined ? project.tags : existing?.tags ?? [],
     createdAt: existing?.createdAt || now(),
     updatedAt: now(),
-    lastOpenedAt: project.lastOpenedAt ?? existing?.lastOpenedAt ?? null,
+    lastOpenedAt: project.lastOpenedAt !== undefined ? project.lastOpenedAt : existing?.lastOpenedAt ?? null,
+    archivedAt: project.archivedAt !== undefined ? project.archivedAt : existing?.archivedAt ?? null,
+    report: project.report !== undefined ? project.report : existing?.report ?? null,
   };
   await db.put("projects", record);
   return record;
+}
+export async function archiveProject(id) {
+  const p = await getProject(id);
+  if (!p) return null;
+  return saveProject({
+    ...p,
+    status: "archived",
+    isPrimary: false,
+    archivedAt: p.archivedAt || now(),
+  });
+}
+export async function reopenProject(id) {
+  const p = await getProject(id);
+  if (!p) return null;
+  return saveProject({
+    ...p,
+    status: "active",
+    archivedAt: null,
+  });
 }
 export async function setPrimaryProject(id) {
   const db = await getDB();
@@ -158,7 +191,7 @@ export async function touchProject(id) {
   if (p) await db.put("projects", { ...p, lastOpenedAt: now() });
 }
 export async function getLastOpenedProject() {
-  const all = await listProjects();
+  const all = await listActiveProjects();
   const opened = all
     .filter((p) => p.lastOpenedAt)
     .sort((a, b) => b.lastOpenedAt.localeCompare(a.lastOpenedAt));
@@ -245,6 +278,13 @@ export async function getMedia(id) {
   if (!id) return null;
   return (await getDB()).get("media", id);
 }
+export async function listMedia(projectId) {
+  return (await getDB()).getAllFromIndex("media", "projectId", projectId);
+}
+export async function projectByteSize(projectId) {
+  const media = await listMedia(projectId);
+  return media.reduce((n, m) => n + (m.size || 0), 0);
+}
 
 /* ------------------------------------------------------------------ */
 /* milestones (timeline)                                               */
@@ -311,12 +351,18 @@ export async function listIdeas() {
   const all = await (await getDB()).getAll("ideas");
   return all.sort((a, b) => b.number - a.number);
 }
-export async function addIdea({ text, source = "text", linkedProjectId = null }) {
+export async function addIdea({
+  text,
+  source = "text",
+  linkedProjectId = null,
+  tags = [],
+}) {
   const db = await getDB();
   const record = {
     text: text?.trim() || "",
     source,
     linkedProjectId,
+    tags: tags || [],
     createdAt: now(),
   };
   const number = await db.add("ideas", record);

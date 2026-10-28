@@ -1,0 +1,11 @@
+{
+  "appId": "com.pioneerbase.app",
+  "appName": "Pioneer Base",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

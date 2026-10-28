@@ -8,3 +8,10 @@ dist-ssr
 .vite
 dev-dist
 *.log
+
+# Android signing secrets — never commit these
+*.keystore
+*.jks
+android/key.properties
+android/app/release/
+
